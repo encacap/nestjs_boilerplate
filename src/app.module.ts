@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserController } from './modules/user/user.controller';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -13,6 +14,8 @@ import * as Joi from 'joi';
                 NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
                 PORT: Joi.number().default(3000),
                 MONGO_URL: Joi.string().required(),
+                JWT_SECRET: Joi.string().required(),
+                JWT_EXPIRATION_MINUTES: Joi.number().default(30),
             }),
             validationOptions: { stripUnknown: true, abortEarly: true },
             expandVariables: true,
@@ -28,6 +31,7 @@ import * as Joi from 'joi';
             inject: [ConfigService],
         }),
         UserModule,
+        AuthModule,
     ],
     controllers: [UserController],
     providers: [],

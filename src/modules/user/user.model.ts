@@ -1,6 +1,8 @@
-import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-export type UserDocument = User & Document;
+export interface UserDocument extends User, Document {
+    id: string;
+}
 
 @Schema()
 export class User {
@@ -19,21 +21,21 @@ export class User {
     })
     password: string;
 
-    @Prop(
-        raw({
-            firstName: {
-                type: String,
-                required: true,
-                trim: true,
-            },
-            lastName: {
-                type: String,
-                required: true,
-                trim: true,
-            },
-        }),
-    )
-    name: Record<string, string>;
+    @Prop({
+        type: String,
+        required: true,
+        trim: true,
+    })
+    firstName: string;
+
+    @Prop({
+        type: String,
+        required: true,
+        trim: true,
+    })
+    lastName: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+const UserSchema = SchemaFactory.createForClass(User);
+
+export { UserSchema };
