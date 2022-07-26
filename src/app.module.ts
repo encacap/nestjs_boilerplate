@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import * as Joi from 'joi';
+import { RoleGuard } from './core/role.guard';
+import { AuthModule } from './modules/auth/auth.module';
 import { UserController } from './modules/user/user.controller';
 import { UserModule } from './modules/user/user.module';
-import { AuthModule } from './modules/auth/auth.module';
-import * as Joi from 'joi';
 
 @Module({
     imports: [
@@ -34,6 +36,11 @@ import * as Joi from 'joi';
         AuthModule,
     ],
     controllers: [UserController],
-    providers: [],
+    providers: [
+        {
+            provide: APP_GUARD,
+            useClass: RoleGuard,
+        },
+    ],
 })
 export class AppModule {}
