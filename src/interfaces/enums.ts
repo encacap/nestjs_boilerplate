@@ -3,9 +3,10 @@ export enum Role {
     USER = 'user',
 }
 
-export enum PostType {
+export enum ImageFolder {
     ESTATE = 'estate',
     NEWS = 'news',
+    OTHER = 'other',
 }
 
 export enum Environment {

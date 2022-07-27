@@ -1,7 +1,20 @@
-import { Body, Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    FileTypeValidator,
+    Get,
+    ParseFilePipe,
+    Post,
+    Request,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { GetDirectUploadURLEntity } from 'src/entities/image/getDirectUploadURL.entity';
 import { ImageDirectUploadURLEntity } from 'src/entities/image/imageDirectUploadURL.entity';
+import { UploadImageRequestEntity } from 'src/entities/image/uploadImageRequestEntity';
 import { ImageService } from './image.service';
 
 @UseGuards(AuthGuard('jwt'))
@@ -16,5 +29,24 @@ export class ImageController {
     ): Promise<ImageDirectUploadURLEntity> {
         const fileName = await this.imageService.getDirectUploadURL(data.postType, req.user, data.postId);
         return fileName;
+    }
+
+    @Post('upload/single')
+    @UseInterceptors(FileInterceptor('file'))
+    uploadImage(
+        @UploadedFile(
+            new ParseFilePipe({
+                validators: [
+                    new FileTypeValidator({
+                        fileType: 'image/*',
+                    }),
+                ],
+            }),
+        )
+        file: Express.Multer.File,
+        @Body() data: UploadImageRequestEntity,
+        @Request() { user },
+    ) {
+        return this.imageService.uploadImage(file, data.folder, user.id, data.postId);
     }
 }
