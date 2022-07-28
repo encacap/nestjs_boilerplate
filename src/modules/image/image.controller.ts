@@ -7,11 +7,12 @@ import {
     Post,
     Request,
     UploadedFile,
+    UploadedFiles,
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { GetDirectUploadURLEntity } from 'src/entities/image/getDirectUploadURL.entity';
 import { ImageDirectUploadURLEntity } from 'src/entities/image/imageDirectUploadURL.entity';
 import { UploadImageRequestEntity } from 'src/entities/image/uploadImageRequestEntity';
@@ -48,5 +49,17 @@ export class ImageController {
         @Request() { user },
     ) {
         return this.imageService.uploadImage(file, data.folder, user.id, data.postId);
+    }
+
+    @Post('upload/multiple')
+    @UseInterceptors(AnyFilesInterceptor())
+    uploadMultipleImages(
+        @UploadedFiles()
+        files: Express.Multer.File[],
+        @Body() data: UploadImageRequestEntity,
+        @Request() { user },
+    ) {
+        console.log(files);
+        return this.imageService.uploadImages(files, data.folder, user.id, data.postId);
     }
 }

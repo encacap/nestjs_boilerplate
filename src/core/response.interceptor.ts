@@ -17,13 +17,15 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
                 const statusCode = context.switchToHttp().getResponse().statusCode;
                 const standardizedData = data?.toObject?.() || data;
 
-                if ('_id' in standardizedData) {
-                    standardizedData.id = standardizedData._id;
-                    delete standardizedData._id;
-                }
+                if (typeof standardizedData !== 'string') {
+                    if ('_id' in standardizedData) {
+                        standardizedData.id = standardizedData._id;
+                        delete standardizedData._id;
+                    }
 
-                if ('__v' in standardizedData) {
-                    delete standardizedData.__v;
+                    if ('__v' in standardizedData) {
+                        delete standardizedData.__v;
+                    }
                 }
 
                 const response: Response<T> = {

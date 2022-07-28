@@ -57,6 +57,11 @@ export class ImageService {
         }
     }
 
+    async uploadImages(files: Express.Multer.File[], folder: ImageFolder, userId: string, postId?: string) {
+        const images = await Promise.all(files.map((file) => this.uploadImage(file, folder, userId, postId)));
+        return images;
+    }
+
     private generateFileName(postType: ImageFolder, userId: string, postId?: string) {
         const imageId = new mongoose.Types.ObjectId().toString();
         return `${postType}_${userId}_${postId || 'unknown'}_${imageId}`;
